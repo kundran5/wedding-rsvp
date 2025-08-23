@@ -583,73 +583,101 @@
             }
         });
 
-        // Handle form submission
+        // Handle form submission using manual fetch to call the Edge Function
         rsvpForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
+            event.preventDefault();
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
 
-    const fullName = form.fullName.value.trim();
-    const email = form.email.value.trim();
-    const phone = form.phone.value.trim();
-    const guestCount = parseInt(form.guestCount.value);
-    const nonVeg = parseInt(form.nonVegCount.value) || 0;
-    const veg = parseInt(form.vegCount.value) || 0;
-    const comments = form.comments.value.trim();
+            // Collect inputs (unchanged)
+            const fullName = form.fullName.value.trim();
+            const email = form.email.value.trim();
+            const phone = form.phone.value.trim();
+            const guestCount = parseInt(form.guestCount.value);
+            const nonVeg = parseInt(form.nonVegCount.value) || 0;
+            const veg = parseInt(form.vegCount.value) || 0;
+            const comments = form.comments.value.trim();
 
-    // Prep response UI
-    responseMessage.classList.remove('success', 'error', 'shake-error');
-    responseMessage.style.display = 'none';
+            // Prep response UI
+            responseMessage.classList.remove('success', 'error', 'shake-error');
+            responseMessage.style.display = 'none';
 
-    // Validate name
-    if (!fullName) return setMessage('error', 'Please enter your name.');
+            // Validation (unchanged)
+            if (!fullName) return setMessage('error', 'Please enter your name.');
+            if (!email) return setMessage('error', 'Please enter your email address.');
+            if (!email.includes('@')) return setMessage('error', 'Please enter a valid email address with @.');
+            if (!phone) return setMessage('error', 'Please enter your phone number.');
+            if (!isValidPhoneNumber(phone)) return setMessage('error', 'Please enter a valid 10-digit phone number.');
+            if (!Number.isFinite(guestCount) || guestCount < 1) return setMessage('error', 'Enter a valid guest count (at least 1).');
+            if (nonVeg < 0 || veg < 0) return setMessage('error', 'Meal counts cannot be negative.');
+            if (nonVeg + veg !== guestCount) return setMessage('error', "Error: Meal count doesn't equal guest count.", { shake: true });
 
-    // Validate email
-    if (!email) return setMessage('error', 'Please enter your email address.');
+            // Build payload for DB + email (unchanged)
+            const formData = {
+                name: fullName,
+                email: email,
+                phone: phone,
+                guest_count: guestCount,
+                non_veg: nonVeg,
+                veg: veg,
+                comments: comments
+            };
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
 
-    if (!email.includes('@')) return setMessage('error', 'Please enter a valid email address with @.');
+            // Save to DB (this part is fine and stays the same)
+            const { error } = await supabaseClient.from('guests').insert([formData]);
 
-    // Validate phone number
-    if (!phone) return setMessage('error', 'Please enter your phone number.');
+            if (error) {
+                console.error('DB submission error:', error);
+                setMessage('error', `Error submitting your RSVP: ${error.message}. Please try again.`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit RSVP';
+            } else {
+                // ======================================================================
+                // THE NEW CODE: Bypassing .invoke() and using a manual fetch() call
+                // ======================================================================
+                try {
+                    console.log("--- STARTING MANUAL FETCH TEST ---");
+                    
+                    // Use existing Supabase setup
+                    const functionUrl = "https://qiuhccrylrsgjajtalaw.supabase.co/functions/v1/send-rsvp-email";
+                    const anonKey = supabaseKey; // same as used to create supabase client
 
-    if (!isValidPhoneNumber(phone)) return setMessage('error', 'Please enter a valid 10-digit phone number.');
+                    const response = await fetch(functionUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Authorization': `Bearer ${anonKey}`,
+                            'apikey': anonKey,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
 
-    if (!Number.isFinite(guestCount) || guestCount < 1) return setMessage('error', 'Enter a valid guest count (at least 1).');
+                    console.log("Manual fetch complete. Status:", response.status);
 
-    if (nonVeg < 0 || veg < 0) return setMessage('error', 'Meal counts cannot be negative.');
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error("Manual fetch returned an error:", errorData);
+                    } else {
+                        const successData = await response.json();
+                        console.log("Manual fetch was successful. Response:", successData);
+                    }
 
-    if (nonVeg + veg !== guestCount) return setMessage('error', "Error: Meal count doesn't equal guest count.", { shake: true });
-
-    const formData = {
-        name: fullName,
-        email: email,
-        phone: phone,
-        guest_count: guestCount,
-        non_veg: nonVeg,
-        veg: veg,
-        comments: comments
-    };
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-
-    const { error } = await supabaseClient.from('guests').insert([formData]);
-
-    if (error) {
-        console.error('Submission error:', error);
-        const friendly = error?.message || 'Unknown error';
-        setMessage('error', `Error submitting your RSVP: ${friendly}. Please try again.`);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit RSVP';
-    } else {
-        // Hide error message and show success page
-        responseMessage.style.display = 'none';
-        showSuccessPage(formData);
-        
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit RSVP';
-    }
-});
+                } catch (e) {
+                    console.error('A critical error occurred during manual fetch:', e);
+                }
+                
+                // This part remains the same
+                responseMessage.style.display = 'none';
+                showSuccessPage(formData);
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit RSVP';
+            }
+        });
     </script>
 </body>
 </html>
