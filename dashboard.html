@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP Response Dashboard</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; background-color: #f4f6f9; }
+        .container { max-width: 1100px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        h1 { text-align: center; margin-bottom: 30px; }
+        
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .controls-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        
+        .download-btn:active {
+            transform: translateY(0);
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .refresh-btn:hover {
+            transform: rotate(180deg);
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .status-dot.connected {
+            background-color: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);
+        }
+        
+        .status-dot.disconnected {
+            background-color: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.6);
+        }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #eef1f5; font-weight: 600; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        
+        .new-row {
+            animation: highlightNew 2s ease-in-out;
+        }
+        
+        @keyframes highlightNew {
+            0% { background-color: #d4edda; }
+            100% { background-color: inherit; }
+        }
+        
+    #summary { display: flex; justify-content: space-around; background: #eef1f5; padding: 20px; border-radius: 8px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    /* Hide the graph/summary entirely */
+    #summary { display: none !important; margin: 0 !important; padding: 0 !important; height: 0 !important; }
+        .summary-box { text-align: center; min-width: 120px; }
+        .summary-box .number { font-size: 2em; font-weight: bold; color: #007bff; transition: all 0.3s ease; }
+        .summary-box .label { font-size: 1em; color: #555; }
+        .summary-box .number.updated { 
+            animation: numberPulse 0.6s ease-in-out;
+            color: #28a745;
+        }
+        
+        @keyframes numberPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .last-updated {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Login overlay */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+        .login-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 520px; /* bigger login box */
+            border-radius: 14px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.28);
+            border: 1px solid #e5e7eb;
+            padding: 28px 32px; /* more padding */
+        }
+        .login-title { margin: 0 0 16px 0; font-size: 22px; color: #111827; font-weight: 800; text-align:center; }
+        .login-field { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+        .login-label { font-size: 13px; color: #374151; font-weight: 600; }
+    .login-input { padding: 14px 14px; border: 2px solid #9ca3af; border-radius: 10px; font-size: 16px; outline: none; }
+        .login-input:focus { border-color: #1d4ed8; box-shadow: 0 0 0 3px rgba(29,78,216,0.2); }
+    .login-actions { display: flex; gap: 10px; margin-top: 20px; align-items: center; justify-content: flex-end; }
+        .login-error { display:none; color: #b91c1c; background: #fee2e2; border:1px solid #fecaca; padding:8px 10px; border-radius:8px; font-size: 13px; }
+    /* Bigger login button */
+    #loginBtn { padding: 12px 18px; font-size: 16px; }
+
+        /* Chart card */
+        .chart-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 16px 0;
+        }
+        .chart-title {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #111827;
+            font-weight: 600;
+        }
+        .chart-box {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 320px; /* limit size as a box */
+            margin: 0 auto;
+        }
+
+        /* Modal styles for Add/Edit */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 1000;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: #ffffff;
+            width: 100%;
+            max-width: 640px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            padding: 22px 26px;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #d1d5db;
+            padding-bottom: 12px;
+        }
+        .modal-title { margin: 0; font-size: 20px; font-weight: 600; color: #111827; }
+        .modal-close { background: transparent; border: none; font-size: 24px; cursor: pointer; color: #6b7280; line-height: 1; }
+        .modal-close:hover { color: #111827; }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 640px) { .modal-grid { grid-template-columns: 1fr; } }
+        .form-field { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            background: #f3f4f6; 
+            border: 1px solid #9ca3af; 
+            padding: 12px; 
+            border-radius: 8px;
+        }
+        .form-label { font-size: 14px; color: #111827; font-weight: 600; }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #9ca3af;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #111827;
+            background: #ffffff;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: #6b7280; }
+        .form-input:focus, .form-textarea:focus { border-color: #1d4ed8; box-shadow: 0 0 0 3px rgba(29,78,216,0.2); }
+        .form-textarea { min-height: 80px; resize: vertical; }
+    .input-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        @media (max-width: 640px) { .input-row { grid-template-columns: 1fr; } }
+    .form-hint { font-size: 12px; color: #374151; margin-top: -2px; }
+    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid #d1d5db; padding-top: 16px; }
+        .btn { padding: 10px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .btn.primary { background-color: #2563eb; color: #fff; }
+        .btn.primary:hover { background-color: #1d4ed8; }
+    .btn.secondary { background-color: #cbd5e1; color: #111827; }
+    .btn.secondary:hover { background-color: #94a3b8; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn.danger { background-color: #dc2626; color: #fff; }
+    .btn.danger:hover { background-color: #b91c1c; }
+        @media (max-width: 480px) { 
+            .modal-actions { flex-direction: column-reverse; } 
+            .modal-actions .btn { width: 100%; } 
+        }        .action-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #d1d5db; background: #f9fafb; cursor: pointer; font-size: 12px; }
+    .action-btn:hover { background: #eef2f7; }
+    /* Bigger logout button */
+    #logoutBtn { padding: 10px 14px; font-size: 14px; border-width: 2px; }
+        /* Hide number input spinners for a cleaner UI */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+        
+        /* Enhanced error styling */
+        #modalError { 
+            font-size: 13px; 
+            line-height: 1.4; 
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 1px solid #fca5a5;
+            border-left: 4px solid #ef4444;
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #991b1b;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+        }
+        
+        /* Field validation states */
+        .form-field.error .form-input {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+            background: #fef2f2;
+        }
+        
+        .form-field.success .form-input {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        }
+        
+        /* Loading state for save button */
+        .btn.loading {
+            position: relative;
+            color: transparent !important;
+        }
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>') center/20px no-repeat;
+            animation: spin 1s linear infinite;
+            border-radius: inherit;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }        @media (max-width: 768px) {
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .controls-group {
+                justify-content: center;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+            
+            #summary {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="appContainer" class="container" style="display:none;">
+        <h1>Guest Responses Dashboard</h1>
+        
+        <div class="header-controls">
+            <div class="controls-group">
+                <button id="addEntryBtn" class="download-btn" style="background: linear-gradient(135deg, #6f42c1, #8a63d2); box-shadow: 0 2px 8px rgba(111,66,193,0.3);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Add Entry
+                </button>
+                <button id="downloadCSV" class="download-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Download CSV
+                </button>
+                <button id="refreshBtn" class="refresh-btn" onclick="fetchResponses()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 005.64 5.64L1 10m22 4a9 9 0 01-14.85 8.36L23 14"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="status-indicator">
+                <div id="statusDot" class="status-dot disconnected"></div>
+                <span id="statusText">Connecting...</span>
+                <button id="logoutBtn" class="action-btn" style="margin-left:8px;">Logout</button>
+            </div>
+        </div>
+        
+        <!-- RSVPs by Date Chart -->
+        <div class="chart-card">
+            <h3 class="chart-title">RSVPs by Date</h3>
+            <div class="chart-box">
+                <canvas id="rsvpChart" aria-label="RSVPs over time" role="img"></canvas>
+            </div>
+        </div>
+
+        <div id="summary">
+            <div class="summary-box">
+                <div id="totalGuests" class="number">0</div>
+                <div class="label">Total Guests</div>
+            </div>
+            <div class="summary-box">
+                <div id="totalResponses" class="number">0</div>
+                <div class="label">Total RSVPs</div>
+            </div>
+            <div class="summary-box">
+                <div id="totalNonVeg" class="number">0</div>
+                <div class="label">Non-Veg Meals</div>
+            </div>
+            <div class="summary-box">
+                <div id="totalVeg" class="number">0</div>
+                <div class="label">Veg Meals</div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Guest Count</th>
+                    <th>Non-Veg</th>
+                    <th>Veg</th>
+                    <th>Comments</th>
+                    <th>Timestamp</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="responsesTableBody">
+                <!-- Data will be loaded here -->
+            </tbody>
+        </table>
+        
+        <div class="last-updated">
+            <span id="lastUpdated">Last updated: Never</span>
+        </div>
+    </div>
+
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay" aria-hidden="true">
+        <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+            <h3 id="loginTitle" class="login-title">Moderator Login</h3>
+            <div id="loginError" class="login-error"></div>
+            <div class="login-field">
+                <label for="loginUsername" class="login-label">Username</label>
+                <input id="loginUsername" class="login-input" type="text" autocomplete="username" />
+            </div>
+            <div class="login-field">
+                <label for="loginPassword" class="login-label">Password</label>
+                <input id="loginPassword" class="login-input" type="password" autocomplete="current-password" />
+            </div>
+            <div class="login-actions">
+                <button id="loginBtn" class="btn primary" type="button">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Entry Modal -->
+    <div id="entryModal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">Add Entry</h3>
+                <button class="modal-close" aria-label="Close" onclick="closeEntryModal()">×</button>
+            </div>
+            <form id="entryForm">
+                <div class="modal-grid">
+                    <div class="form-field">
+                        <label for="m_full_name" class="form-label">Full Name</label>
+                        <input type="text" id="m_full_name" class="form-input" placeholder="e.g., Poon K" required />
+                    </div>
+                    <div class="form-field">
+                        <label for="m_email" class="form-label">Email</label>
+                        <input type="email" id="m_email" class="form-input" placeholder="you@example.com" required />
+                    </div>
+                    <div class="form-field" style="grid-column: 1 / -1;">
+                        <label for="m_phone" class="form-label">Phone</label>
+                        <input type="tel" id="m_phone" class="form-input" placeholder="(123) 456-7890" />
+                    </div>
+                    <div class="input-row" style="grid-column: 1 / -1;">
+                        <div class="form-field">
+                            <label for="m_guest_count" class="form-label">Guests</label>
+                            <input type="number" id="m_guest_count" class="form-input" min="1" step="1" required />
+                        </div>
+                        <div class="form-field">
+                            <label for="m_non_veg_count" class="form-label">Non‑veg</label>
+                            <input type="number" id="m_non_veg_count" class="form-input" min="0" step="1" />
+                        </div>
+                        <div class="form-field">
+                            <label for="m_veg_count" class="form-label">Veg</label>
+                            <input type="number" id="m_veg_count" class="form-input" min="0" step="1" />
+                        </div>
+                    </div>
+                    <div class="form-field" style="grid-column: 1 / -1;">
+                        <span class="form-hint">Non‑veg + Veg must equal Guests.</span>
+                    </div>
+                    <div class="form-field" style="grid-column: 1 / -1;">
+                        <label for="m_comments" class="form-label">Comments</label>
+                        <textarea id="m_comments" class="form-textarea" rows="4" placeholder="Notes or dietary restrictions..."></textarea>
+                    </div>
+                </div>
+                <div id="modalError" style="display:none; margin-top:8px; color:#991b1b; background:#fee2e2; border:1px solid #fecaca; padding:10px 12px; border-radius:8px;"></div>
+                <div class="modal-actions">
+                    <button type="button" id="deleteEntryBtn" class="btn danger" style="display:none;">Delete</button>
+                    <button type="button" class="btn secondary" onclick="closeEntryModal()">Cancel</button>
+                    <button id="saveEntryBtn" type="submit" class="btn primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        'use strict';
+        // Your Supabase credentials have been inserted here
+        const supabaseUrl = 'https://qiuhccrylrsgjajtalaw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpdWhjY3J5bHJzZ2phanRhbGF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5MDY1OTAsImV4cCI6MjA3MTQ4MjU5MH0.euDgnf6NYbpN9be5lTGR77PHX6ngC7mu9bEvkdDSyo0';
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        // DOM helpers
+        const $ = (id) => document.getElementById(id);
+        const responsesTableBody = $('responsesTableBody');
+        const totalGuestsEl = $('totalGuests');
+        const totalResponsesEl = $('totalResponses');
+        const totalNonVegEl = $('totalNonVeg');
+        const totalVegEl = $('totalVeg');
+        const statusDot = $('statusDot');
+        const statusText = $('statusText');
+        const lastUpdated = $('lastUpdated');
+        const downloadBtn = $('downloadCSV');
+    const rsvpChartCanvas = $('rsvpChart');
+
+        // Global data storage
+        let currentData = [];
+        let realtimeChannel = null;
+    let rsvpChart = null;
+
+        // Initialize real-time connection
+        function initializeRealtime() {
+            realtimeChannel = supabaseClient
+                .channel('rsvp-changes')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'guests'
+                }, handleRealtimeEvent)
+                .subscribe((status) => {
+                    console.log('Realtime subscription status:', status);
+                    updateConnectionStatus(status === 'SUBSCRIBED');
+                });
+        }
+
+        // Handle real-time events
+    function handleRealtimeEvent(payload) {
+            console.log('Real-time event:', payload);
+            
+            switch (payload.eventType) {
+                case 'INSERT':
+                    handleNewRSVP(payload.new);
+                    break;
+                case 'UPDATE':
+                    handleUpdatedRSVP(payload.new);
+                    break;
+                case 'DELETE':
+                    handleDeletedRSVP(payload.old);
+                    break;
+                default:
+                    // For any other events, refresh all data
+                    fetchResponses();
+            }
+        }
+
+        // Handle new RSVP
+        function handleNewRSVP(newRSVP) {
+            currentData.unshift(newRSVP); // Add to beginning
+            renderTable();
+            updateSummary();
+            updateRsvpChart();
+            
+            // Highlight the new row
+            setTimeout(() => {
+                const firstRow = responsesTableBody.querySelector('tr');
+                if (firstRow) {
+                    firstRow.classList.add('new-row');
+                }
+            }, 100);
+        }
+
+        // Handle updated RSVP
+        function handleUpdatedRSVP(updatedRSVP) {
+            const index = currentData.findIndex(item => item.id === updatedRSVP.id);
+            if (index !== -1) {
+                currentData[index] = updatedRSVP;
+                renderTable();
+                updateSummary();
+                updateRsvpChart();
+            }
+        }
+
+        // Handle deleted RSVP
+        function handleDeletedRSVP(deletedRSVP) {
+            currentData = currentData.filter(item => item.id !== deletedRSVP.id);
+            renderTable();
+            updateSummary();
+            updateRsvpChart();
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            if (connected) {
+                statusDot.className = 'status-dot connected';
+                statusText.textContent = 'Live Updates Active';
+            } else {
+                statusDot.className = 'status-dot disconnected';
+                statusText.textContent = 'Connection Lost';
+            }
+        }
+
+        // Fetch all responses
+    async function fetchResponses() {
+            try {
+                const { data: responses, error } = await supabaseClient
+                    .from('guests')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error fetching responses:', error);
+                    responsesTableBody.innerHTML = `<tr><td colspan="9">Error loading data: ${error.message}</td></tr>`;
+                    return;
+                }
+
+                currentData = responses || [];
+                renderTable();
+                updateSummary();
+                updateLastUpdated();
+                updateRsvpChart();
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                responsesTableBody.innerHTML = `<tr><td colspan="9">Error loading data.</td></tr>`;
+            }
+        }
+
+        // Render table
+        function renderTable() {
+            if (currentData.length === 0) {
+                responsesTableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px; color: #666;">No entries yet</td></tr>`;
+                return;
+            }
+
+            const dtf = new Intl.DateTimeFormat(undefined, { dateStyle: 'short', timeStyle: 'short' });
+
+            const rows = currentData.map(r => {
+                const formattedDate = dtf.format(new Date(r.created_at));
+                const comments = r.comments ? (r.comments.length > 50 ? r.comments.substring(0, 50) + '...' : r.comments) : '-';
+                const phone = r.phone || '-';
+                
+                return `<tr>
+                    <td><strong>${escapeHtml(r.name)}</strong></td>
+                    <td>${escapeHtml(r.email)}</td>
+                    <td>${escapeHtml(phone)}</td>
+                    <td><strong>${r.guest_count}</strong></td>
+                    <td>${r.non_veg || 0}</td>
+                    <td>${r.veg || 0}</td>
+                    <td title="${escapeHtml(r.comments || '')}">${escapeHtml(comments)}</td>
+                    <td>${formattedDate}</td>
+                    <td><button class="action-btn" onclick="openEditModal('${r.id}')">Edit</button></td>
+                </tr>`;
+            });
+
+            responsesTableBody.innerHTML = rows.join('');
+        }
+
+        // Build/update RSVP chart
+        function updateRsvpChart() {
+            if (!rsvpChartCanvas) return;
+            // Group by local date (YYYY-MM-DD)
+            const countsByDate = new Map();
+            for (const row of currentData) {
+                const d = new Date(row.created_at);
+                // Use local date string
+                const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                countsByDate.set(key, (countsByDate.get(key) || 0) + 1);
+            }
+            const labels = Array.from(countsByDate.keys()).sort();
+            const daily = labels.map(l => countsByDate.get(l));
+            // Build cumulative totals
+            const data = [];
+            let running = 0;
+            for (const v of daily) { running += v; data.push(running); }
+            const maxY = Math.max(1, ...(data.length ? data : [1]));
+            const suggestedMax = maxY + Math.ceil(maxY * 0.1); // +10% headroom
+
+            const cfg = {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Total RSVPs (Cumulative)',
+                        data,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                        pointBackgroundColor: '#1d4ed8',
+                        pointRadius: 3,
+                        tension: 0.2,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // respect fixed box height
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Date' },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax,
+                            ticks: { precision: 0 },
+                            title: { display: true, text: 'RSVP Count' },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }
+            };
+
+            if (!rsvpChart) {
+                rsvpChart = new Chart(rsvpChartCanvas.getContext('2d'), cfg);
+            } else {
+                rsvpChart.data.labels = labels;
+                rsvpChart.data.datasets[0].data = data;
+                rsvpChart.options.scales.y.suggestedMax = suggestedMax;
+                rsvpChart.update();
+            }
+        }
+
+        // Update summary with animation
+    function updateSummary() {
+            const totals = currentData.reduce((acc, r) => {
+                acc.guests += Number(r.guest_count) || 0;
+                acc.nonVeg += Number(r.non_veg) || 0;
+                acc.veg += Number(r.veg) || 0;
+                return acc;
+            }, { guests: 0, nonVeg: 0, veg: 0 });
+
+            // Animate number changes
+            animateNumberChange(totalGuestsEl, totals.guests);
+            animateNumberChange(totalResponsesEl, currentData.length);
+            animateNumberChange(totalNonVegEl, totals.nonVeg);
+            animateNumberChange(totalVegEl, totals.veg);
+        }
+
+        // Animate number changes
+    function animateNumberChange(element, newValue) {
+            const oldValue = element.textContent;
+            element.textContent = newValue;
+            
+            if (oldValue !== newValue.toString()) {
+                element.classList.add('updated');
+                setTimeout(() => element.classList.remove('updated'), 600);
+            }
+        }
+
+        // Update last updated time
+    function updateLastUpdated() {
+            const now = new Date().toLocaleString();
+            lastUpdated.textContent = `Last updated: ${now}`;
+        }
+
+        // Escape HTML for security
+    function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Download CSV functionality
+    function downloadCSV() {
+            if (currentData.length === 0) {
+                alert('No data to download');
+                return;
+            }
+
+            // CSV headers
+            const headers = ['Name', 'Email', 'Phone', 'Guest Count', 'Non-Veg Meals', 'Veg Meals', 'Comments', 'Submitted Date'];
+            
+            // Convert data to CSV format
+            const csvContent = [
+                headers.join(','),
+                ...currentData.map(row => {
+                    const date = new Date(row.created_at).toLocaleString();
+                    const comments = (row.comments || '').replace(/"/g, '""'); // Escape quotes
+                    const phone = row.phone || '';
+                    
+                    return [
+                        `"${row.name}"`,
+                        `"${row.email}"`,
+                        `"${phone}"`,
+                        row.guest_count,
+                        row.non_veg || 0,
+                        row.veg || 0,
+                        `"${comments}"`,
+                        `"${date}"`
+                    ].join(',');
+                })
+            ].join('\n');
+
+            // Create and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = `rsvp-responses-${new Date().toISOString().split('T')[0]}.csv`;
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show feedback
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                Downloaded!
+            `;
+            downloadBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+            
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+            }, 2000);
+        }
+
+    // Event listeners
+    downloadBtn.addEventListener('click', downloadCSV);
+    $('addEntryBtn').addEventListener('click', openAddModal);
+
+        // Initialize the application
+        let appInitialized = false;
+        async function initialize() {
+            console.log('Initializing dashboard...');
+            await fetchResponses();
+            initializeRealtime();
+            appInitialized = true;
+        }
+
+        // Start the application when DOM is loaded
+        function isLoggedIn() {
+            return localStorage.getItem('mod_login_ok') === '1';
+        }
+
+        function showLogin() {
+            $('loginOverlay').style.display = 'flex';
+            $('loginOverlay').setAttribute('aria-hidden', 'false');
+            $('appContainer').style.display = 'none';
+            setTimeout(() => $('loginUsername').focus(), 0);
+        }
+
+        function hideLogin() {
+            $('loginOverlay').style.display = 'none';
+            $('loginOverlay').setAttribute('aria-hidden', 'true');
+            $('appContainer').style.display = '';
+        }
+
+        async function tryLogin() {
+            const u = $('loginUsername').value.trim();
+            const p = $('loginPassword').value;
+            const errBox = $('loginError');
+            errBox.style.display = 'none';
+            if (!u || !p) {
+                errBox.textContent = 'Enter both username and password.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            // Fetch the single profile row containing dashboard credentials
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profile')
+                    .select('username, password')
+                    .limit(1)
+                    .single();
+                if (error) throw error;
+                if (!data) throw new Error('Credentials not set. Create a row in the "profile" table.');
+                if (u === data.username && p === data.password) {
+                    localStorage.setItem('mod_login_ok', '1');
+                    hideLogin();
+                    if (!appInitialized) await initialize();
+                } else {
+                    errBox.textContent = 'Invalid username or password.';
+                    errBox.style.display = 'block';
+                }
+            } catch (ex) {
+                console.error('Login error:', ex);
+                errBox.textContent = ex.message || 'Login failed.';
+                errBox.style.display = 'block';
+            }
+        }
+
+        // Boot flow
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (isLoggedIn()) {
+                    hideLogin();
+                    initialize();
+                } else {
+                    showLogin();
+                }
+            });
+        } else {
+            if (isLoggedIn()) {
+                hideLogin();
+                initialize();
+            } else {
+                showLogin();
+            }
+        }
+
+        // Handle page visibility changes (reconnect when page becomes visible)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && realtimeChannel && isLoggedIn()) {
+                console.log('Page became visible, refreshing connection...');
+                fetchResponses();
+            }
+        });
+
+        // Handle connection errors and reconnect
+        window.addEventListener('online', () => {
+            if (!isLoggedIn()) return;
+            console.log('Connection restored, refreshing...');
+            fetchResponses();
+        });
+
+    // Login handlers
+    $('loginBtn').addEventListener('click', tryLogin);
+    $('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
+        $('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('mod_login_ok');
+            try {
+                if (realtimeChannel) {
+                    supabaseClient.removeChannel(realtimeChannel);
+                    realtimeChannel = null;
+                }
+            } catch (e) { console.warn('Error removing realtime channel', e); }
+            appInitialized = false;
+            showLogin();
+        });
+
+        // Modal logic and Supabase writes
+        let editingId = null;
+
+        function openAddModal() {
+            editingId = null;
+            $('modalTitle').textContent = 'Add Entry';
+            clearModalError();
+            fillEntryForm();
+            // Hide delete button in add mode
+            const delBtn = $('deleteEntryBtn');
+            if (delBtn) delBtn.style.display = 'none';
+            showEntryModal();
+        }
+
+        async function openEditModal(id) {
+            editingId = id;
+            $('modalTitle').textContent = 'Edit Entry';
+            clearModalError();
+            // Try to find locally first
+            let row = currentData.find(r => r.id === id);
+            if (!row) {
+                const { data, error } = await supabaseClient.from('guests').select('*').eq('id', id).single();
+                if (error) {
+                    alert('Unable to load entry for edit');
+                    return;
+                }
+                row = data;
+            }
+            fillEntryForm(row);
+            // Show delete button in edit mode
+            const delBtn = $('deleteEntryBtn');
+            if (delBtn) delBtn.style.display = 'inline-flex';
+            showEntryModal();
+        }
+
+        function showEntryModal() {
+            $('entryModal').classList.add('show');
+            $('entryModal').setAttribute('aria-hidden', 'false');
+            setTimeout(() => $('m_full_name').focus(), 0);
+        }
+
+        function closeEntryModal() {
+            $('entryModal').classList.remove('show');
+            $('entryModal').setAttribute('aria-hidden', 'true');
+        }
+
+        function fillEntryForm(row = null) {
+            $('m_full_name').value = row?.name || '';
+            $('m_email').value = row?.email || '';
+            $('m_phone').value = row?.phone || '';
+            $('m_guest_count').value = row?.guest_count ?? 1;
+            $('m_non_veg_count').value = row?.non_veg ?? 0;
+            $('m_veg_count').value = row?.veg ?? 0;
+            $('m_comments').value = row?.comments || '';
+        }
+
+        function getEntryFormData() {
+            return {
+                name: $('m_full_name').value.trim(),
+                email: $('m_email').value.trim(),
+                phone: $('m_phone').value.trim(),
+                guest_count: Number($('m_guest_count').value) || 0,
+                non_veg: Number($('m_non_veg_count').value) || 0,
+                veg: Number($('m_veg_count').value) || 0,
+                comments: $('m_comments').value.trim(),
+            };
+        }
+
+        function validateEntry(data) {
+            if (!data.name) return 'Name is required';
+            if (!data.email || !data.email.includes('@')) return 'Valid email is required';
+            const phoneDigits = (data.phone || '').replace(/\D/g, '');
+            if (data.phone && phoneDigits.length !== 10) return 'Phone must be 10 digits';
+            if (!Number.isFinite(data.guest_count) || data.guest_count < 1) return 'Guests must be at least 1';
+            if (data.non_veg < 0 || data.veg < 0) return 'Meal counts cannot be negative';
+            if (data.non_veg + data.veg !== data.guest_count) return 'Meals must equal guest count';
+            return null;
+        }
+
+        function showModalError(msg) {
+            const el = $('modalError');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+        function clearModalError() {
+            const el = $('modalError');
+            el.textContent = '';
+            el.style.display = 'none';
+        }
+
+        $('entryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearModalError();
+            const btn = $('saveEntryBtn');
+            const data = getEntryFormData();
+            const err = validateEntry(data);
+            if (err) { showModalError(err); return; }
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+            try {
+                if (editingId == null) {
+                    const { data: inserted, error } = await supabaseClient
+                        .from('guests')
+                        .insert([data])
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    // Optimistic update (realtime will also handle)
+                    currentData.unshift(inserted);
+                } else {
+                    const { data: updated, error } = await supabaseClient
+                        .from('guests')
+                        .update(data)
+                        .eq('id', editingId)
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    const idx = currentData.findIndex(r => r.id === editingId);
+                    if (idx !== -1) currentData[idx] = updated;
+                }
+                renderTable();
+                updateSummary();
+                updateLastUpdated();
+                closeEntryModal();
+            } catch (ex) {
+                console.error('Save error:', ex);
+                showModalError(ex.message || 'Error saving entry');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save';
+            }
+        });
+
+        // Delete entry handler
+        $('deleteEntryBtn').addEventListener('click', async () => {
+            clearModalError();
+            if (!editingId) return;
+            const confirmed = window.confirm('Delete this entry? This action cannot be undone.');
+            if (!confirmed) return;
+            const delBtn = $('deleteEntryBtn');
+            delBtn.disabled = true;
+            const prevText = delBtn.textContent;
+            delBtn.textContent = 'Deleting...';
+            try {
+                const { error } = await supabaseClient
+                    .from('guests')
+                    .delete()
+                    .eq('id', editingId);
+                if (error) throw error;
+                // Optimistic remove; realtime will also update
+                currentData = currentData.filter(r => r.id !== editingId);
+                renderTable();
+                updateSummary();
+                updateLastUpdated();
+                closeEntryModal();
+            } catch (ex) {
+                console.error('Delete error:', ex);
+                showModalError(ex.message || 'Error deleting entry');
+            } finally {
+                delBtn.disabled = false;
+                delBtn.textContent = prevText;
+            }
+        });
+
+        // Close modal with Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeEntryModal();
+        });
+
+    </script>
+</body>
+</html>

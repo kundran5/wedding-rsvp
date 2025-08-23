@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhil & Kalyanni's Wedding RSVP</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400&display=swap');
+        
+        html, body { height: 100%; overflow: hidden; }
+        body { 
+            font-family: 'Lato', sans-serif;
+            color: #5d5d5d; 
+            margin: 0; 
+            padding: 20px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh;
+            background-color: #f8f6f3;
+            box-sizing: border-box;
+        }
+
+        .container { 
+            width: min(100%, 1200px);
+            height: calc(100vh - 50px);
+            background: #ffffff; 
+            padding: 35px; 
+            border-radius: 16px; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); 
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .main-flex {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .image-side {
+            flex: 0 0 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: -60px; /* Push image much higher */
+        }
+
+        .form-side {
+            flex: 1;
+            min-width: 350px;
+        }
+        
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: #333; font-weight: 700; }
+        h1 { font-size: 3em; margin: 4px 0; line-height: 1.1; }
+        h2 { font-size: 1.8em; margin: 4px 0; }
+        .sub-header { font-size: 1.1em; margin: 4px 0; font-style: italic; color: #666; }
+        .header { margin-bottom: 12px; text-align: center; }
+        .couple-image { 
+            display: block;
+            width: 100%;
+            max-width: 340px;
+            height: auto;
+            border-radius: 16px;
+            border: 6px solid #e8d9c4;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .details { text-align: center; }
+        .details p { font-size: 1.05em; line-height: 1.5; margin: 4px 0; }
+        .details strong { color: #333; font-weight: 600; }
+        
+        .address-link {
+            display: inline-block;
+            color: #c4a77d !important;
+            text-decoration: none;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f8f6f3, #ffffff);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 2px solid #c4a77d;
+            box-shadow: 0 2px 8px rgba(196, 167, 125, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .address-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .address-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 167, 125, 0.4);
+            background: linear-gradient(135deg, #c4a77d, #d4b88d);
+            color: white !important;
+            border-color: #b3956a;
+        }
+        
+        .address-link:hover::before {
+            left: 100%;
+        }
+        
+        .address-link:active {
+            transform: translateY(0);
+        }
+        hr { border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0)); margin: 24px 0; }
+        form { display: flex; flex-direction: column; gap: 8px; }
+    .form-group { text-align: left; display: flex; flex-direction: column; }
+        .row { display: flex; gap: 16px; }
+        .row .form-group { flex: 1; }
+    .row-three { display: flex; gap: 12px; align-items: stretch; }
+        .row-three .form-group { flex: 1; }
+    label { display: block; margin-bottom: 3px; font-weight: 500; color: #555; font-size: 1em; white-space: normal; overflow-wrap: anywhere; }
+        input[type="text"], input[type="number"], input[type="email"], input[type="tel"], textarea { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 10px; 
+            box-sizing: border-box; 
+            font-size: 1em; 
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+        .number-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: auto; /* pushes controls to the bottom so all align horizontally */
+        }
+        .number-input input {
+            text-align: center;
+            width: 80px;
+            padding: 14px 8px;
+        }
+        .number-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #c4a77d;
+            background: white;
+            color: #c4a77d;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .number-btn:hover {
+            background: #c4a77d;
+            color: white;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus { 
+            outline: none; 
+            border-color: #c4a77d; 
+            box-shadow: 0 0 0 3px rgba(196, 167, 125, 0.1);
+        }
+        button { 
+            padding: 16px 24px; 
+            border: none; 
+            background-color: #c4a77d; 
+            color: white; 
+            border-radius: 10px; 
+            font-size: 1.1em; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        button:hover { background-color: #b3956a; }
+        .rsvp-deadline { margin-top: 4px; font-style: italic; color: #888; font-size: 1em; }
+        #responseMessage { margin-top: 8px; padding: 15px; border-radius: 8px; display: none; }
+        #responseMessage.success { background-color: #e5f7e5; color: #3c763d; }
+        #responseMessage.error { 
+            background-color: #f7e5e5; 
+            color: #a94442; 
+            border: 2px solid #d9534f;
+            box-shadow: 0 0 20px rgba(217, 83, 79, 0.5);
+        }
+        
+        @keyframes violentShake {
+            0% { transform: translateX(0); }
+            10% { transform: translateX(-15px) rotate(-2deg); }
+            20% { transform: translateX(15px) rotate(2deg); }
+            30% { transform: translateX(-12px) rotate(-1deg); }
+            40% { transform: translateX(12px) rotate(1deg); }
+            50% { transform: translateX(-10px) rotate(-2deg); }
+            60% { transform: translateX(10px) rotate(2deg); }
+            70% { transform: translateX(-8px) rotate(-1deg); }
+            80% { transform: translateX(8px) rotate(1deg); }
+            90% { transform: translateX(-5px) rotate(-1deg); }
+            100% { transform: translateX(0); }
+        }
+        
+        .shake-error {
+            animation: violentShake 0.6s ease-in-out;
+            background-color: #ffebee !important;
+            color: #c62828 !important;
+            border: 2px solid #f44336 !important;
+            box-shadow: 0 0 25px rgba(244, 67, 54, 0.7) !important;
+        }
+
+        /* Success page styles */
+        .success-page {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .success-page.show {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .success-title {
+            font-size: 2.5em;
+            color: #c4a77d;
+            margin-bottom: 20px;
+        }
+        
+        .confirmation-details {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #c4a77d;
+        }
+        
+        .confirmation-details h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .detail-value {
+            color: #333;
+        }
+        
+        .new-rsvp-btn {
+            padding: 14px 24px;
+            background-color: #c4a77d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .new-rsvp-btn:hover {
+            background-color: #b3956a;
+        }
+
+        /* Mobile/responsive adjustments */
+        @media (max-width: 768px) {
+            html, body { overflow: auto; }
+            body { 
+                padding: 16px; 
+                height: auto;
+                min-height: 100vh;
+            }
+            .container { 
+                padding: 24px; 
+                height: auto;
+                border-radius: 12px;
+                overflow: visible;
+            }
+            .main-flex { 
+                flex-direction: column; 
+                gap: 24px; 
+            }
+            .image-side { 
+                flex: none;
+                width: 100%; 
+                max-width: 100%;
+            }
+            .form-side {
+                min-width: 0;
+            }
+            .couple-image {
+                max-width: 280px;
+            }
+            h1 { font-size: 2.2em; }
+            h2 { font-size: 1.4em; }
+            .row { 
+                flex-direction: column; 
+                gap: 16px; 
+            }
+            .row-three { 
+                flex-direction: column; 
+                gap: 16px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="container">
+        <div class="header">
+            <p class="sub-header">With great joy, the families of</p>
+            <h2>Kural and Siva</h2>
+            <p class="sub-header">invite you to celebrate the wedding of</p>
+            <h1>Muhil & Kalyanni</h1>
+        </div>
+        <div class="main-flex">
+            <div class="image-side">
+                <img class="couple-image" src="pillayar.jpg" alt="Muhil and Kalyanni">
+                <div class="details">
+                    <p><strong>Save the Date</strong></p>
+                    <p>Saturday, November 29, 2025</p>
+                    <p><strong>Reception</strong></p>
+                    <p>Viking Rentals Centre (Event Hall) Okotoks</p>
+                    <p><a href="https://share.google/sJvOLHit8b4TOFaoz" target="_blank" class="address-link">#4, 204 Community Way, Okotoks, AB T1S 2N3</a></p>
+                </div>
+            </div>
+            <div class="form-side">
+                <div id="rsvp-section">
+                    <h2>RSVP</h2>
+                    <form id="rsvpForm">
+                        <div class="form-group">
+                            <label for="fullName">What is your name?</label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="(123) 456-7890" maxlength="14" required>
+                        </div>
+                        <div class="row-three">
+                            <div class="form-group">
+                                <label for="guestCount">How many people are coming?</label>
+                                <div class="number-input">
+                                    <button type="button" class="number-btn" onclick="changeNumber('guestCount', -1)">−</button>
+                                    <input type="number" id="guestCount" name="guestCount" min="1" step="1" value="1" required readonly>
+                                    <button type="button" class="number-btn" onclick="changeNumber('guestCount', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="nonVegCount">How many non-veg meals?</label>
+                                <div class="number-input">
+                                    <button type="button" class="number-btn" onclick="changeNumber('nonVegCount', -1)">−</button>
+                                    <input type="number" id="nonVegCount" name="nonVegCount" min="0" step="1" value="0" readonly>
+                                    <button type="button" class="number-btn" onclick="changeNumber('nonVegCount', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="vegCount">How many veg meals?</label>
+                                <div class="number-input">
+                                    <button type="button" class="number-btn" onclick="changeNumber('vegCount', -1)">−</button>
+                                    <input type="number" id="vegCount" name="vegCount" min="0" step="1" value="0" readonly>
+                                    <button type="button" class="number-btn" onclick="changeNumber('vegCount', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="comments">Additional comments</label>
+                            <textarea id="comments" name="comments" placeholder="Any dietary restrictions, special requests, or other comments..."></textarea>
+                        </div>
+                        <button type="submit">Submit RSVP</button>
+                    </form>
+                    <p class="rsvp-deadline">Kindly RSVP by September 30</p>
+                    <div id="responseMessage"></div>
+                </div>
+                
+                <!-- Success Page -->
+                <div id="success-page" class="success-page">
+                    <h1 class="success-title">Thank You!</h1>
+                    <p>Your RSVP has been successfully submitted.</p>
+                    
+                    <div class="confirmation-details">
+                        <h3>Confirmation Details</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Name:</span>
+                            <span class="detail-value" id="confirm-name">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value" id="confirm-email">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value" id="confirm-phone">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Guest Count:</span>
+                            <span class="detail-value" id="confirm-guests">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Non-Veg Meals:</span>
+                            <span class="detail-value" id="confirm-nonveg">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Veg Meals:</span>
+                            <span class="detail-value" id="confirm-veg">-</span>
+                        </div>
+                        <div class="detail-row" id="confirm-comments-row" style="display: none;">
+                            <span class="detail-label">Comments:</span>
+                            <span class="detail-value" id="confirm-comments">-</span>
+                        </div>
+                    </div>
+                    
+                    <button class="new-rsvp-btn" onclick="makeNewRSVP()">Make Another RSVP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        'use strict';
+        // Your Supabase credentials have been inserted here
+        const supabaseUrl = 'https://qiuhccrylrsgjajtalaw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpdWhjY3J5bHJzZ2phanRhbGF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5MDY1OTAsImV4cCI6MjA3MTQ4MjU5MH0.euDgnf6NYbpN9be5lTGR77PHX6ngC7mu9bEvkdDSyo0';
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        const rsvpForm = document.getElementById('rsvpForm');
+        const responseMessage = document.getElementById('responseMessage');
+        const rsvpSection = document.getElementById('rsvp-section');
+        const successPage = document.getElementById('success-page');
+
+        // Small util for element lookup
+        const $ = (id) => document.getElementById(id);
+
+        // Centralized response message handling
+        function setMessage(type, text, { shake = false } = {}) {
+            responseMessage.classList.remove('success', 'error', 'shake-error');
+            responseMessage.textContent = text;
+            responseMessage.style.display = 'block';
+            if (type === 'success') responseMessage.classList.add('success');
+            if (type === 'error') responseMessage.classList.add('error');
+            if (shake) {
+                responseMessage.classList.add('shake-error');
+                setTimeout(() => responseMessage.classList.remove('shake-error'), 600);
+            }
+        }
+
+        // Function to show success page with confirmation details
+        function showSuccessPage(formData) {
+            $('confirm-name').textContent = formData.name;
+            $('confirm-email').textContent = formData.email;
+            $('confirm-phone').textContent = formData.phone;
+            $('confirm-guests').textContent = formData.guest_count;
+            $('confirm-nonveg').textContent = formData.non_veg;
+            $('confirm-veg').textContent = formData.veg;
+            
+            if (formData.comments && formData.comments.trim()) {
+                $('confirm-comments').textContent = formData.comments;
+                $('confirm-comments-row').style.display = 'flex';
+            } else {
+                $('confirm-comments-row').style.display = 'none';
+            }
+            
+            rsvpSection.style.display = 'none';
+            successPage.classList.add('show');
+        }
+
+        // Function to go back to RSVP form
+        function makeNewRSVP() {
+            successPage.classList.remove('show');
+            rsvpSection.style.display = 'block';
+            
+            // Reset form to defaults
+            rsvpForm.reset();
+            $('guestCount').value = '1';
+            $('nonVegCount').value = '0';
+            $('vegCount').value = '0';
+            $('phone').value = '';
+        }
+
+        // Function to change number inputs with +/- buttons
+        function changeNumber(inputId, delta) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseInt(input.value) || 0;
+            const newValue = Math.max(parseInt(input.min) || 0, currentValue + delta);
+            input.value = newValue;
+            
+            // Update meal counts validation
+            updateMealCounts();
+        }
+
+        // Function to ensure meal counts don't exceed guest count
+        function updateMealCounts() {
+            const guestCount = parseInt($('guestCount').value) || 1;
+            const nonVegCount = parseInt($('nonVegCount').value) || 0;
+            const vegCount = parseInt($('vegCount').value) || 0;
+            
+            // If total meals exceed guests, adjust them proportionally
+            const totalMeals = nonVegCount + vegCount;
+            if (totalMeals > guestCount) {
+                const remainingSlots = guestCount - Math.min(nonVegCount, vegCount);
+                if (nonVegCount > vegCount) {
+                    $('nonVegCount').value = Math.min(nonVegCount, remainingSlots);
+                } else {
+                    $('vegCount').value = Math.min(vegCount, remainingSlots);
+                }
+            }
+        }
+
+        // Function to format phone number as user types
+        function formatPhoneNumber(value) {
+            // Remove all non-numeric characters
+            const phoneNumber = value.replace(/\D/g, '');
+            
+            // Apply formatting based on length
+            if (phoneNumber.length <= 3) {
+                return phoneNumber;
+            } else if (phoneNumber.length <= 6) {
+                return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+            } else {
+                return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+            }
+        }
+
+        // Function to validate phone number (exactly 10 digits)
+        function isValidPhoneNumber(phoneNumber) {
+            const digits = phoneNumber.replace(/\D/g, '');
+            return digits.length === 10;
+        }
+
+        // Add phone number formatting event listener
+    $('phone').addEventListener('input', function(e) {
+            const formatted = formatPhoneNumber(e.target.value);
+            e.target.value = formatted;
+        });
+
+        // Prevent non-numeric input except for backspace, delete, tab, etc.
+    $('phone').addEventListener('keydown', function(e) {
+            // Allow backspace, delete, tab, escape, enter
+            if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+                // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true) ||
+                // Allow home, end, left, right arrows
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+
+        // Handle form submission
+        rsvpForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    const fullName = form.fullName.value.trim();
+    const email = form.email.value.trim();
+    const phone = form.phone.value.trim();
+    const guestCount = parseInt(form.guestCount.value);
+    const nonVeg = parseInt(form.nonVegCount.value) || 0;
+    const veg = parseInt(form.vegCount.value) || 0;
+    const comments = form.comments.value.trim();
+
+    // Prep response UI
+    responseMessage.classList.remove('success', 'error', 'shake-error');
+    responseMessage.style.display = 'none';
+
+    // Validate name
+    if (!fullName) return setMessage('error', 'Please enter your name.');
+
+    // Validate email
+    if (!email) return setMessage('error', 'Please enter your email address.');
+
+    if (!email.includes('@')) return setMessage('error', 'Please enter a valid email address with @.');
+
+    // Validate phone number
+    if (!phone) return setMessage('error', 'Please enter your phone number.');
+
+    if (!isValidPhoneNumber(phone)) return setMessage('error', 'Please enter a valid 10-digit phone number.');
+
+    if (!Number.isFinite(guestCount) || guestCount < 1) return setMessage('error', 'Enter a valid guest count (at least 1).');
+
+    if (nonVeg < 0 || veg < 0) return setMessage('error', 'Meal counts cannot be negative.');
+
+    if (nonVeg + veg !== guestCount) return setMessage('error', "Error: Meal count doesn't equal guest count.", { shake: true });
+
+    const formData = {
+        name: fullName,
+        email: email,
+        phone: phone,
+        guest_count: guestCount,
+        non_veg: nonVeg,
+        veg: veg,
+        comments: comments
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const { error } = await supabaseClient.from('guests').insert([formData]);
+
+    if (error) {
+        console.error('Submission error:', error);
+        const friendly = error?.message || 'Unknown error';
+        setMessage('error', `Error submitting your RSVP: ${friendly}. Please try again.`);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit RSVP';
+    } else {
+        // Hide error message and show success page
+        responseMessage.style.display = 'none';
+        showSuccessPage(formData);
+        
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit RSVP';
+    }
+});
+    </script>
+</body>
+</html>
