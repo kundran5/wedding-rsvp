@@ -93,10 +93,13 @@
             box-shadow: 0 0 10px rgba(220, 53, 69, 0.6);
         }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    /* Table + responsive container */
+    .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; min-width: 720px; }
         th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #eef1f5; font-weight: 600; }
         tr:nth-child(even) { background-color: #f9fafb; }
+    thead th { position: sticky; top: 0; z-index: 1; }
         
         .new-row {
             animation: highlightNew 2s ease-in-out;
@@ -306,7 +309,10 @@
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }        @media (max-width: 768px) {
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 768px) {
             .header-controls {
                 flex-direction: column;
                 align-items: stretch;
@@ -318,6 +324,7 @@
             
             table {
                 font-size: 14px;
+                min-width: 600px;
             }
             
             th, td {
@@ -328,6 +335,28 @@
                 flex-direction: column;
                 gap: 15px;
             }
+        }
+
+        @media (max-width: 640px) {
+            /* Hide less critical columns on phones: Email, Phone, Comments, Timestamp */
+            table thead th:nth-child(2), /* Email */
+            table thead th:nth-child(3), /* Phone */
+            table thead th:nth-child(7), /* Comments */
+            table thead th:nth-child(8), /* Timestamp */
+            table tbody td:nth-child(2),
+            table tbody td:nth-child(3),
+            table tbody td:nth-child(7),
+            table tbody td:nth-child(8) { display: none; }
+
+            table { min-width: 0; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .container { padding: 16px; margin: 10px auto; }
+            .chart-box { height: 220px; }
+            .download-btn, .refresh-btn { width: 100%; justify-content: center; }
+            .status-indicator { justify-content: center; }
         }
     </style>
 </head>
@@ -390,7 +419,8 @@
             </div>
         </div>
 
-        <table>
+    <div class="table-container">
+    <table>
             <thead>
                 <tr>
                     <th>Name</th>
@@ -408,6 +438,7 @@
                 <!-- Data will be loaded here -->
             </tbody>
         </table>
+    </div>
         
         <div class="last-updated">
             <span id="lastUpdated">Last updated: Never</span>
