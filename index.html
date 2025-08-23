@@ -304,18 +304,22 @@
             .main-flex { 
                 flex-direction: column; 
                 gap: 24px; 
+                align-items: stretch; /* stretch children to full width on mobile */
             }
             .image-side { 
                 flex: none;
                 width: 100%; 
                 max-width: 100%;
+                margin-top: 0; /* remove desktop negative margin that caused overlap */
+                margin-bottom: 12px; /* add spacing below image */
             }
             .form-side {
                 min-width: 0;
+                width: 100%; /* take full width */
             }
-            .couple-image {
-                max-width: 280px;
-            }
+            #rsvpForm { width: 100%; }
+            .row, .row-three { width: 100%; }
+            .couple-image { max-width: 260px; height: auto; }
             h1 { font-size: 2.2em; }
             h2 { font-size: 1.4em; }
             .row { 
