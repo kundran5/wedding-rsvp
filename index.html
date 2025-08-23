@@ -57,10 +57,34 @@
         }
         
         h1, h2, h3 { font-family: 'Playfair Display', serif; color: #333; font-weight: 700; }
-        h1 { font-size: 3em; margin: 4px 0; line-height: 1.1; }
-        h2 { font-size: 1.8em; margin: 4px 0; }
+        h1 { font-size: 3em; margin: 4px 0; line-height: 1.1; color: #e74c3c; }
+        h2 { font-size: 1.8em; margin: 4px 0; color: #3498db; }
         .sub-header { font-size: 1.1em; margin: 4px 0; font-style: italic; color: #666; }
-        .header { margin-bottom: 12px; text-align: center; }
+        .header { 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 40px; 
+            justify-content: space-between;
+        }
+        .header-text { 
+            text-align: center; 
+            margin-left: 400px; 
+            flex: 1;
+        }
+        .header-image {
+            flex: 0 0 auto;
+        }
+        .header-photo {
+            max-width: 180px;
+            max-height: 180px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 16px;
+            border: 6px solid #e8d9c4;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
         .couple-image { 
             display: block;
             width: 100%;
@@ -87,6 +111,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
         }
         
         .address-link::before {
@@ -122,6 +147,7 @@
         .row .form-group { flex: 1; }
     .row-three { display: flex; gap: 12px; align-items: stretch; }
         .row-three .form-group { flex: 1; }
+        .row-three label { text-align: center; }
     label { display: block; margin-bottom: 3px; font-weight: 500; color: #555; font-size: 1em; white-space: normal; overflow-wrap: anywhere; }
         input[type="text"], input[type="number"], input[type="email"], input[type="tel"], textarea { 
             width: 100%; 
@@ -320,6 +346,22 @@
             #rsvpForm { width: 100%; }
             .row, .row-three { width: 100%; }
             .couple-image { max-width: 260px; height: auto; }
+            .header { 
+                flex-direction: column; 
+                align-items: center; 
+                gap: 20px; 
+                margin-left: 0;
+            }
+            .header-text { 
+                text-align: center; 
+                margin-left: 0;
+            }
+            .header-photo {
+                max-width: 120px;
+                max-height: 120px;
+                width: auto;
+                height: auto;
+            }
             h1 { font-size: 2.2em; }
             h2 { font-size: 1.4em; }
             .row { 
@@ -338,17 +380,23 @@
 
     <div class="container">
         <div class="header">
-            <p class="sub-header">With great joy, the families of</p>
-            <h2>Kural and Siva</h2>
-            <p class="sub-header">invite you to celebrate the wedding of</p>
-            <h1>Muhil & Kalyanni</h1>
+            <div class="header-text">
+                <p class="sub-header">With great joy, the family of</p>
+                <h2>Kural and Siva</h2>
+                <p class="sub-header">invite you to celebrate the wedding reception of their son</p>
+                <h1>Muhil & Kalyanni</h1>
+            </div>
+            <div class="header-image">
+                <img src="mk.jpg" alt="Muhil and Kalyanni" class="header-photo">
+            </div>
         </div>
         <div class="main-flex">
             <div class="image-side">
                 <img class="couple-image" src="pillayar.jpg" alt="Muhil and Kalyanni">
                 <div class="details">
                     <p><strong>Save the Date</strong></p>
-                    <p>Saturday, November 29, 2025</p>
+                    <p>5:30 pm Saturday, November 29, 2025</p>
+                    <p></p>
                     <p><strong>Reception</strong></p>
                     <p>Viking Rentals Centre (Event Hall) Okotoks</p>
                     <p><a href="https://share.google/sJvOLHit8b4TOFaoz" target="_blank" class="address-link">#4, 204 Community Way, Okotoks, AB T1S 2N3</a></p>
@@ -356,10 +404,9 @@
             </div>
             <div class="form-side">
                 <div id="rsvp-section">
-                    <h2>RSVP</h2>
                     <form id="rsvpForm">
                         <div class="form-group">
-                            <label for="fullName">What is your name?</label>
+                            <label for="fullName">Name</label>
                             <input type="text" id="fullName" name="fullName" required>
                         </div>
                         <div class="form-group">
@@ -368,11 +415,11 @@
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone number</label>
-                            <input type="tel" id="phone" name="phone" placeholder="(123) 456-7890" maxlength="14" required>
+                            <input type="tel" id="phone" name="phone" placeholder="" maxlength="14" required>
                         </div>
                         <div class="row-three">
                             <div class="form-group">
-                                <label for="guestCount">How many people are coming?</label>
+                                <label for="guestCount">Attendees</label>
                                 <div class="number-input">
                                     <button type="button" class="number-btn" onclick="changeNumber('guestCount', -1)">−</button>
                                     <input type="number" id="guestCount" name="guestCount" min="1" step="1" value="1" required readonly>
@@ -380,7 +427,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="nonVegCount">How many non-veg meals?</label>
+                                <label for="nonVegCount">Non-Vegetarian</label>
                                 <div class="number-input">
                                     <button type="button" class="number-btn" onclick="changeNumber('nonVegCount', -1)">−</button>
                                     <input type="number" id="nonVegCount" name="nonVegCount" min="0" step="1" value="0" readonly>
@@ -388,7 +435,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="vegCount">How many veg meals?</label>
+                                <label for="vegCount">Vegetarian</label>
                                 <div class="number-input">
                                     <button type="button" class="number-btn" onclick="changeNumber('vegCount', -1)">−</button>
                                     <input type="number" id="vegCount" name="vegCount" min="0" step="1" value="0" readonly>
