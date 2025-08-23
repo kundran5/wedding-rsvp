@@ -75,6 +75,8 @@
         .header-image {
             flex: 0 0 auto;
         }
+    /* Hidden by default; shown on mobile as a bottom photo */
+    .mobile-bottom-photo { display: none; }
         .header-photo {
             max-width: 180px;
             max-height: 180px;
@@ -375,6 +377,28 @@
                 flex-direction: column; 
                 gap: 16px; 
             }
+            .address-link {
+                font-size: 0.97em;
+                padding: 5px 7px;
+                white-space: nowrap;
+            }
+            /* Move MK image to bottom on mobile */
+            .header-image { display: none; }
+            .mobile-bottom-photo {
+                display: flex;
+                justify-content: center;
+                margin-top: 5px;
+            }
+            .mobile-bottom-photo .bottom-photo {
+                max-width: 300px;
+                max-height: 300px;
+                width: auto;
+                height: auto;
+                object-fit: contain;
+                border-radius: 16px;
+                border: 6px solid #e8d9c4;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            }
         }
     </style>
 </head>
@@ -496,6 +520,10 @@
                     <button class="new-rsvp-btn" onclick="makeNewRSVP()">Make Another RSVP</button>
                 </div>
             </div>
+        </div>
+        <!-- Mobile-only MK image at the very bottom -->
+        <div class="mobile-bottom-photo">
+            <img src="mk.jpg" alt="Muhil and Kalyanni" class="bottom-photo" />
         </div>
     </div>
 
