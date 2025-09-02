@@ -75,6 +75,23 @@
         .header-image {
             flex: 0 0 auto;
         }
+        /* Hidden by default: pillayar image shown at very top only on mobile */
+        .mobile-top-pillayar { 
+            display: none; 
+            justify-content: center; 
+            margin-bottom: 18px; 
+        }
+        .mobile-top-pillayar img { 
+            max-width: 168px; /* reduced by ~30% from 240px */
+            width: 100%; 
+            height: auto; 
+            border-radius: 16px; 
+            border: 6px solid #e8d9c4; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15); 
+        }
+    /* Mobile-only details (duplicate of desktop side details) */
+    .mobile-details { display: none; text-align: center; font-size: 0.95em; margin-top: 6px; }
+    .mobile-details p { margin: 4px 0; line-height: 1.4; }
     /* Hidden by default; shown on mobile as a bottom photo */
     .mobile-bottom-photo { display: none; }
         .header-photo {
@@ -90,7 +107,7 @@
         .couple-image { 
             display: block;
             width: 100%;
-            max-width: 340px;
+            max-width: 200px; /* reduced from 340px to shrink desktop image size */
             height: auto;
             border-radius: 16px;
             border: 6px solid #e8d9c4;
@@ -319,15 +336,22 @@
         @media (max-width: 768px) {
             html, body { overflow: auto; }
             body { 
-                padding: 16px; 
+                padding: 0; 
                 height: auto;
                 min-height: 100vh;
+                display: block; /* stop flex centering so top image stays at very top */
             }
+            .mobile-top-pillayar { display: flex; padding-top: 12px; }
+            .mobile-details { display: block; }
+            /* Hide entire side image column on mobile to show only top image */
+            .image-side { display: none !important; }
             .container { 
-                padding: 24px; 
+                padding: 0 24px 24px; 
                 height: auto;
-                border-radius: 12px;
+                border-radius: 0;
+                box-shadow: none;
                 overflow: visible;
+                background: transparent;
             }
             .main-flex { 
                 flex-direction: column; 
@@ -403,12 +427,14 @@
     </style>
 </head>
 <body>
-
-
     <div class="container">
+        <!-- Mobile top pillayar image (hidden on desktop; now inside container) -->
+        <div class="mobile-top-pillayar">
+            <img src="pillayar.jpg" alt="Blessings" />
+        </div>
         <div class="header">
             <div class="header-text">
-                <p class="sub-header">With great joy, the family of</p>
+                <p class="sub-header">With blessings and joy</p>
                 <h2>Kural and Siva</h2>
                 <p class="sub-header">invite you to celebrate the wedding reception of their son</p>
                 <h1>Muhil & Kalyanni</h1>
@@ -417,14 +443,16 @@
                 <img src="mk.jpg" alt="Muhil and Kalyanni" class="header-photo">
             </div>
         </div>
+        <div class="mobile-details">
+            <p>5:30 pm Saturday, November 29, 2025</p>
+            <p>Viking Rentals Centre (Event Hall) Okotoks</p>
+            <p><a href="https://share.google/sJvOLHit8b4TOFaoz" target="_blank" class="address-link">#4, 204 Community Way, Okotoks, AB T1S 2N3</a></p>
+        </div>
         <div class="main-flex">
             <div class="image-side">
                 <img class="couple-image" src="pillayar.jpg" alt="Muhil and Kalyanni">
                 <div class="details">
-                    <p><strong>Save the Date</strong></p>
                     <p>5:30 pm Saturday, November 29, 2025</p>
-                    <p></p>
-                    <p><strong>Reception</strong></p>
                     <p>Viking Rentals Centre (Event Hall) Okotoks</p>
                     <p><a href="https://share.google/sJvOLHit8b4TOFaoz" target="_blank" class="address-link">#4, 204 Community Way, Okotoks, AB T1S 2N3</a></p>
                 </div>
